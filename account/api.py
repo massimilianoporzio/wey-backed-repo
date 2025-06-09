@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from rest_framework.decorators import api_view,authentication_classes, permission_classes
 
-from wey_backend.account.forms import SignupForm
+from account.forms import SignupForm
 
 @api_view(['POST'])
 @authentication_classes([])  # No authentication required for signup
@@ -24,9 +24,20 @@ def signup(request):
         form.save()
         #TODO: send email to user for verification
     else:
-        message = 'error'
+        message = ''
+        if form.errors:
+            for field, errors in form.errors.items():
+                
+                message += f"{'\n'.join(errors)} "
+                message +="\n"
+            print(message)
+               
+               
+            
+        else:
+            message = 'Invalid data provided'
         code = 400 #code for bad request
     
     
     
-    return JsonResponse({'status': message}, status=code)
+    return JsonResponse({'message': message}, status=code)
